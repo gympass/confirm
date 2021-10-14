@@ -1,0 +1,25 @@
+name: 'Confirm'
+description: 'Confirms Actions on Slack'
+branding:
+  icon: 'cloud'
+  color: 'gray-dark'
+inputs:
+  entrypoint:
+    description: 'confirm binary entrypoint'
+    required: false
+outputs:
+  result:
+    description: "The result of the confirmation. Possible values are 'approved' or 'aborted'"
+    value: ${{ steps.confirm-result.outputs.result }}
+runs:
+  using: "composite"
+  steps:
+    - name: "Run confirm"
+      id: confirm-result
+      shell: bash
+      run: |
+        set -eux
+        entrypoint='/gympass/confirm'
+        if [ -n '${{ inputs.entrypoint }}' ]; then entrypoint="${{ inputs.entrypoint }}"; fi
+        cmd=("$entrypoint" --github-token ${{ github.token }})
+        "${cmd[@]}"
